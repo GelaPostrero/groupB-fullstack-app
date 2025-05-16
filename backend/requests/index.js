@@ -310,7 +310,7 @@ async function update(req, res, next) {
       });
     }
     
-    // If items were provided, update them and create a workflow entry for edit
+    // If items were provided, update them
     if (req.body.items || req.body.requestItems) {
       // Delete existing items
       await db.RequestItem.destroy({ where: { requestId: request.id } });
@@ -325,22 +325,24 @@ async function update(req, res, next) {
         })));
       }
       
-      // Find employee to get employeeId for the message
-      const employee = await db.Employee.findByPk(request.employeeId);
-      const employeeIdDisplay = employee ? employee.employeeId : request.employeeId;
-      
-      // Create a workflow entry for request edit (even if status also changed)
-      await db.Workflow.create({
-        employeeId: request.employeeId,
-        type: 'Request Approval',
-        status: 'Pending',
-        details: JSON.stringify({
-          requestId: request.id,
-          requestType: request.type,
-          requesterId: request.employeeId,
-          message: `Review updated ${request.type} request #${request.id} from Employee ID ${employeeIdDisplay}.`
-        })
-      });
+      // Create a workflow entry for request edit ONLY if status didn't also change
+      if (!statusChanged) {
+        // Find employee to get employeeId for the message
+        const employee = await db.Employee.findByPk(request.employeeId);
+        const employeeIdDisplay = employee ? employee.employeeId : request.employeeId;
+        
+        await db.Workflow.create({
+          employeeId: request.employeeId,
+          type: 'Request Approval',
+          status: 'Pending',
+          details: JSON.stringify({
+            requestId: request.id,
+            requestType: request.type,
+            requesterId: request.employeeId,
+            message: `Review updated ${request.type} request #${request.id} from Employee ID ${employeeIdDisplay}.`
+          })
+        });
+      }
     }
     
     // Get updated request with items
