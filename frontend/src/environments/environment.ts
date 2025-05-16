@@ -4,9 +4,8 @@
 
 export const environment = {
     production: false,
-    apiUrl: 'http://localhost:4000',
-    // Uncomment the line below to test with the production backend
-    // apiUrl: 'https://final-project-8vyf.onrender.com'
+    // apiUrl: 'http://localhost:4000', 
+    apiUrl: 'https://final-project-8vyf.onrender.com'
 };
 
 /*
