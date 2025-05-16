@@ -10,9 +10,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-// allow cors requests from any origin and with credentials
+// allow cors requests from Firebase hosting and local development
 app.use(cors({
-    origin: (origin, callback) => callback(null, true),
+    origin: ['https://final-project-e797f.web.app', 'http://localhost:4200'],
     credentials: true
 }));
 
